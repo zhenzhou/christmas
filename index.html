@@ -1,79 +1,147 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>three.js - particles - random</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+		<style type="text/css">
+			body {
+				background-color: #000044;
+				background: url(img/bg.jpg) repeat-x;
+				margin: 0px;
+				overflow: hidden;
+			}
 
-  <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Christmas : " />
+			a {
+				color:#0078ff;
+			}
+		</style>
+	</head>
+	<body onload="init()">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+	<script type="text/javascript" src="js/ThreeCanvas.js"></script>
+	<script type="text/javascript" src="js/Snow.js"></script>
+	
+		<script>
 
-    <title>Christmas</title>
-  </head>
+			var SCREEN_WIDTH = window.innerWidth;
+			var SCREEN_HEIGHT = window.innerHeight;
 
-  <body>
+			var container;
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/zhenzhou/christmas">View on GitHub</a>
+			var particle;
 
-          <h1 id="project_title">Christmas</h1>
-          <h2 id="project_tagline"></h2>
+			var camera;
+			var scene;
+			var renderer;
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/zhenzhou/christmas/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/zhenzhou/christmas/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
+			var mouseX = 0;
+			var mouseY = 0;
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+			
+			var particles = []; 
+			var particleImage = new Image();//THREE.ImageUtils.loadTexture( "img/ParticleSmoke.png" );
+			particleImage.src = 'img/ParticleSmoke.png'; 
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+		
+		
+			function init() {
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+				container = document.createElement('div');
+				document.body.appendChild(container);
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+				camera = new THREE.PerspectiveCamera( 75, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 10000 );
+				camera.position.z = 1000;
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+				scene = new THREE.Scene();
+				scene.add(camera);
+					
+				renderer = new THREE.CanvasRenderer();
+				renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+				var material = new THREE.ParticleBasicMaterial( { map: new THREE.Texture(particleImage) } );
+					
+				for (var i = 0; i < 500; i++) {
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+					particle = new Particle3D( material);
+					particle.position.x = Math.random() * 2000 - 1000;
+					particle.position.y = Math.random() * 2000 - 1000;
+					particle.position.z = Math.random() * 2000 - 1000;
+					particle.scale.x = particle.scale.y =  1;
+					scene.add( particle );
+					
+					particles.push(particle); 
+				}
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+				container.appendChild( renderer.domElement );
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+	
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+				
+				setInterval( loop, 1000 / 60 );
+				
+			}
+			
+			function onDocumentMouseMove( event ) {
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+				mouseX = event.clientX - windowHalfX;
+				mouseY = event.clientY - windowHalfY;
+			}
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+			function onDocumentTouchStart( event ) {
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+				if ( event.touches.length == 1 ) {
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
-    </div>
+					event.preventDefault();
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Christmas maintained by <a href="https://github.com/zhenzhou">zhenzhou</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+				}
+			}
 
-    
+			function onDocumentTouchMove( event ) {
 
-  </body>
+				if ( event.touches.length == 1 ) {
+
+					event.preventDefault();
+
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+				}
+			}
+
+			//
+
+			function loop() {
+
+			for(var i = 0; i<particles.length; i++)
+				{
+
+					var particle = particles[i]; 
+					particle.updatePhysics(); 
+	
+					with(particle.position)
+					{
+						if(y<-1000) y+=2000; 
+						if(x>1000) x-=2000; 
+						else if(x<-1000) x+=2000; 
+						if(z>1000) z-=2000; 
+						else if(z<-1000) z+=2000; 
+					}				
+				}
+			
+				camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+				camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+				camera.lookAt(scene.position); 
+
+				renderer.render( scene, camera );
+
+				
+			}
+
+		</script>
+	</body>
 </html>
